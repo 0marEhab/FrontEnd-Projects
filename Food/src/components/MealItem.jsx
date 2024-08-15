@@ -1,47 +1,31 @@
-import Button from "./Ui/Button";
-import useHttp from "../hooks/useHttp";
-import { lazy, useContext } from "react";
-import CartContext from "../store/CartContext";
+import { useContext } from 'react';
 
-const config = {
-  method: "GET",
-};
+import { currencyFormatter } from '../util/formatting.js';
+import Button from './UI/Button.jsx';
+import CartContext from '../store/CartContext.jsx';
 
-export default function MealItem() {
+export default function MealItem({ meal }) {
   const cartCtx = useContext(CartContext);
-  function handleAddMealToCart(meal) {
+
+  function handleAddMealToCart() {
     cartCtx.addItem(meal);
   }
-  const {
-    data: meals,
-    loading,
-    error,
-  } = useHttp("http://localhost:3000/meals", config, []);
 
   return (
-    <>
-    {meals.map((meal) => (
-        <div key={meal.id}>
-          <div className="bg-zinc-600 w-[300px] h-[500px]  shadow-md overflow-hidden  rounded-md m-8">
-            <img
-              onLoad={lazy}
-              src={`http://localhost:3000/${meal.image}`}
-              alt=""
-              className="w-full h-60 object-fit rounded-md "
-            />
-            <div className="text-center  text-zinc-300">
-              <p>{meal.name}</p>
-              <p>Price: {meal.price}</p>
-
-              <p className=""> {meal.description}</p>
-
-              <Button onClick={() => handleAddMealToCart(meal)}>
-                Add to cart
-              </Button>
-            </div>
-          </div>
+    <li className="meal-item">
+      <article>
+        <img src={`http://localhost:3000/${meal.image}`} alt={meal.name} />
+        <div>
+          <h3>{meal.name}</h3>
+          <p className="meal-item-price">
+            {currencyFormatter.format(meal.price)}
+          </p>
+          <p className="meal-item-description">{meal.description}</p>
         </div>
-      ))}
-    </>
+        <p className="meal-item-actions">
+          <Button onClick={handleAddMealToCart}>Add to Cart</Button>
+        </p>
+      </article>
+    </li>
   );
 }
